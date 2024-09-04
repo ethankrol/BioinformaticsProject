@@ -7,4 +7,4 @@ Scientific Question: What is the difference in gene expression between mice shor
 
 Resilient Mice vs Control Mice
 
-48 hours after defeat vs 28 days after defeat
+48 Hours After Defeat vs 28 Days After Defeat
