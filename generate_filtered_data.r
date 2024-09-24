@@ -1,3 +1,9 @@
+source("config.r")
+
+if(!exists("mapped_expression_df_file") | !file.exists(mapped_expression_df_file)){
+  source("assignment_1_part_1b.r")
+}
+
 filtered_data_file <- file.path(results_dir, "filtered_data.tsv")
 filtered_metadata_file <- file.path(results_dir, "filtered_metadata.tsv")
 

@@ -1,5 +1,7 @@
 source("config.r")
 
+mapped_expression_df_file <- file.path(results_dir, "mapped_expression_df.tsv")
+
 # Install the Mouse package
 if (!("org.Mm.eg.db" %in% installed.packages())) {
   # Install this package if it isn't installed yet
@@ -8,6 +10,7 @@ if (!("org.Mm.eg.db" %in% installed.packages())) {
 
 # Load the required libraries
 library(org.Mm.eg.db)
+library(dplyr)
 library(magrittr)
 
 # read in metadata
@@ -43,7 +46,8 @@ map_df <- data.frame(
 mapped_expression_df <- expression_df %>%
   inner_join(map_df, by = c("Gene" = "ENSEMBL")) %>%
   dplyr::select(Symbol, everything()) %>%
-  dplyr::select(-Gene)
+  dplyr::select(-Gene) %>%
+  filter(!is.na(Symbol))
 
 # write to tsv
-readr::write_tsv(mapped_expression_df, file.path(results_dir, "mapped_expression_df.tsv"))
+readr::write_tsv(mapped_expression_df, file.path(mapped_expression_df_file))
