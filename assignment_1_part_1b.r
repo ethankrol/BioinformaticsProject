@@ -1,4 +1,4 @@
-
+source("config.r")
 
 # Install the Mouse package
 if (!("org.Mm.eg.db" %in% installed.packages())) {
@@ -28,17 +28,22 @@ expression_df <- expression_df %>%
 
 # Map Ensembl IDs to their associated ??? can't be hugo cuz their not human
 # TO DO: find out what gene ids to map to
-mapped_list <- mapIds(
-  org.Mm.eg.db, # Replace with annotation package for your organism
-  keys = expression_df$Gene,
-  keytype = "ENSEMBL", # Replace with the type of gene identifiers in your data
-  column = "SYMBOL", # The type of gene identifiers you would like to map to
-  multiVals = "list"
-)
+map_df <- data.frame( 
+  mapIds(
+    org.Mm.eg.db, # Replace with annotation package for your organism
+    keys = expression_df$Gene,
+    keytype = "ENSEMBL", # Replace with the type of gene identifiers in your data
+    column = "SYMBOL", # The type of gene identifiers you would like to map to
+    multiVals = "first"
+  )
+) %>%
+  dplyr::rename("Symbol" = "mapIds.org.Mm.eg.db..keys...expression_df.Gene..keytype....ENSEMBL...") %>%
+  tibble::rownames_to_column("ENSEMBL")
 
-# Let's make our list a bit more manageable by turning it into a data frame
-mapped_df <- mapped_list %>%
-  tibble::enframe(name = "Ensembl", value = "SYMBOL") %>%
-  # enframe() makes a `list` column; we will simplify it with unnest()
-  # This will result in one row of our data frame per list item
-  tidyr::unnest(cols = SYMBOL)
+mapped_expression_df <- expression_df %>%
+  inner_join(map_df, by = c("Gene" = "ENSEMBL")) %>%
+  dplyr::select(Symbol, everything()) %>%
+  dplyr::select(-Gene)
+
+# write to tsv
+readr::write_tsv(mapped_expression_df, file.path(results_dir, "mapped_expression_df.tsv"))

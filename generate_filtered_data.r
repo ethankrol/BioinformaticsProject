@@ -1,3 +1,6 @@
+filtered_data_file <- file.path(results_dir, "filtered_data.tsv")
+filtered_metadata_file <- file.path(results_dir, "filtered_metadata.tsv")
+
 ## install packages
 if (!("DESeq2" %in% installed.packages())) {
   BiocManager::install("DESeq2", update = FALSE)
