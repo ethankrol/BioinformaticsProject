@@ -1,2 +1,15 @@
 ## tsv data
 *.tsv
+
+## plots
+*.png
+
+## renv
+renv/
+renv.lock
+
+## R stuff
+.Rhistory
+.Rprofile
+.RData
+
