@@ -1,16 +1,4 @@
-# Define the file path to the data directory
-# Replace with the path of the folder the files will be in
-data_dir <- file.path("data", "SRP062829")
 
-# Declare the file path to the gene expression matrix file
-# inside directory saved as `data_dir`
-# Replace with the path to your dataset file
-data_file <- file.path(data_dir, "SRP062829.tsv")
-
-# Declare the file path to the metadata file
-# inside the directory saved as `data_dir`
-# Replace with the path to your metadata file
-metadata_file <- file.path(data_dir, "metadata_SRP062829.tsv")
 
 # Install the Mouse package
 if (!("org.Mm.eg.db" %in% installed.packages())) {
