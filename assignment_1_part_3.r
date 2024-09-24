@@ -1,7 +1,10 @@
 source("config.r")
 
-if( !exists("filtered_data_file") | !exists("filtered_metadata_file") |
-    !file.exists(filtered_data_file)| !file.exists(filtered_metadata_file)) {
+if (!exists("filtered_data_file") | !exists("filtered_metadata_file")) {
+  source("generate_filtered_data.r")
+}
+
+if (!file.exists(filtered_data_file)| !file.exists(filtered_metadata_file)) {
   source("generate_filtered_data.r")
 }
 
@@ -15,16 +18,13 @@ library(ggplot2)
 
 set.seed(123)
 
-metadata <- readr::read_tsv(metadata_file)
-expression_df <- readr::read_tsv(data_file) %>%
-  tibble::column_to_rownames("Gene")
-
-filtered_expression_df <- readr::read_tsv(filtered_data_file)
+filtered_expression_df <- readr::read_tsv(filtered_data_file) %>%
+  tibble::column_to_rownames("Symbol")
 filtered_metadata <- readr::read_tsv(filtered_metadata_file)
 
 ddset <- DESeqDataSetFromMatrix(
   # Here we supply non-normalized count data
-  countData = gene_matrix,
+  countData = filtered_expression_df,
   # Supply the `colData` with our metadata data frame
   colData = filtered_metadata,
   # Supply our experimental variable to `design`

@@ -1,6 +1,9 @@
 source("config.r")
 
-if(!exists("mapped_expression_df_file") | !file.exists(mapped_expression_df_file)){
+if(!exists("mapped_expression_df_file")) {
+  source("assignment_1_part_1b.r")
+}
+if (!file.exists(mapped_expression_df_file)){
   source("assignment_1_part_1b.r")
 }
 
@@ -18,12 +21,13 @@ if (!("apeglm" %in% installed.packages())) {
 ## load libraries
 library(DESeq2)
 library(magrittr)
+library(dplyr)
 
 set.seed(123)
 
 metadata <- readr::read_tsv(metadata_file)
-expression_df <- readr::read_tsv(data_file) %>%
-  tibble::column_to_rownames("Gene")
+expression_df <- readr::read_tsv(mapped_expression_df_file) %>%
+  tibble::column_to_rownames("Symbol")
 
 # Make the data in the order of the metadata
 expression_df <- expression_df %>%
@@ -55,7 +59,8 @@ filtered_expression_df <- filtered_expression_df %>%
   dplyr::filter(rowSums(.) >= 10)
 
 # round all expression counts
-gene_matrix <- round(filtered_expression_df)
+gene_matrix <- round(filtered_expression_df) %>%
+  tibble::rownames_to_column("Symbol")
 
 # write the filtered data to a file
 filtered_data_file <- file.path(results_dir, "filtered_data.tsv")

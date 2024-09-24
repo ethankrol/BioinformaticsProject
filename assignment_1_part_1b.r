@@ -46,8 +46,13 @@ map_df <- data.frame(
 mapped_expression_df <- expression_df %>%
   inner_join(map_df, by = c("Gene" = "ENSEMBL")) %>%
   dplyr::select(Symbol, everything()) %>%
-  dplyr::select(-Gene) %>%
-  filter(!is.na(Symbol))
+  filter(!is.na(Symbol)) %>%
+  dplyr::select(-Gene)
+
+mapped_expression_df <- mapped_expression_df %>%
+  dplyr::group_by(Symbol) %>%
+  dplyr::summarize_all(sum)
+
 
 # write to tsv
 readr::write_tsv(mapped_expression_df, file.path(mapped_expression_df_file))
