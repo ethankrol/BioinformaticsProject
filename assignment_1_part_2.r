@@ -1,82 +1,30 @@
 source("config.r")
 
-
-if (!("pheatmap" %in% installed.packages())) {
-  install.packages("pheatmap")
+if (!exists("filtered_data_file") | !exists("filtered_metadata_file")) {
+  source("generate_filtered_data.r")
 }
-library(pheatmap)
 
-#Heatmap generation for the top 50 genes
+if (!file.exists(filtered_data_file)| !file.exists(filtered_metadata_file)) {
+  source("generate_filtered_data.r")
+}
 
-top_fifty_genes <- top_fifty$Gene
-top_fifty_expression_df <- filtered_expression_df[top_fifty_genes, ]
+## load libraries
+library(ggplot2)
 
-sample_annotations <- data.frame(
-  Group = filtered_metadata$time_status
+filtered_expression_df <- readr::read_tsv(filtered_data_file) %>%
+  tibble::column_to_rownames("Symbol")
+filtered_metadata <- readr::read_tsv(filtered_metadata_file)
+
+ddset <- DESeqDataSetFromMatrix(
+  # Here we supply non-normalized count data
+  countData = filtered_expression_df,
+  # Supply the `colData` with our metadata data frame
+  colData = filtered_metadata,
+  # Supply our experimental variable to `design`
+  design = ~time_status
 )
+head(filtered_expression_df)
 
-rownames(sample_annotations) <- colnames(scaled_expression_df)
-
-scaled_expression_df <- t(scale(t(top_fifty_expression_df)))
-
-heatmap_plot <- pheatmap(
-  scaled_expression_df,
-  cluster_rows = TRUE,
-  cluster_cols = TRUE,
-  show_rownames = TRUE,
-  show_colnames = TRUE,
-  annotation_col = sample_annotations,
-  main = "Heatmap of significant genes"
-)
-
-ggsave(filename = file.path(plots_dir, "SRP062829P_heatmop_top_50_expressed_genes.png"),
-       plot = heatmap_plot,)
-
-#Heatmap for all genes
-
-top_genes <- deseq_df$Gene
-top_expression_df <- filtered_expression_df[top_genes, ]
-
-significant_genes <- deseq_df %>%
-  dplyr::filter(padj < 0.05 & abs(log2FoldChange) > 1) %>%
-  dplyr::arrange(padj)
-
-significant_gene_names <- significant_genes$Gene
-
-significant_expression_df <- filtered_expression_df[significant_gene_names, ]
-
-scaled_significant_expression_df <- t(scale(t(significant_expression_df)))
-
-sample_annotations <- data.frame(
-  Group = filtered_metadata$time_status
-)
-
-rownames(sample_annotations) <- colnames(scaled_expression_df)
-
-scaled_expression_df <- t(scale(t(top_expression_df)))
-
-heatmap_plot_top_50 <- pheatmap(
-  significant_expression_df,
-  cluster_rows = TRUE,
-  cluster_cols = TRUE,
-  show_rownames = TRUE,
-  show_colnames = TRUE,
-  annotation_col = sample_annotations,
-  main = "Heatmap of Top 50 Significant Genes"
-)
-
-heatmap_plot <- pheatmap(
-  scaled_significant_expression_df,
-  cluster_rows = TRUE,
-  cluster_cols = TRUE,
-  show_rownames = TRUE,
-  show_colnames = TRUE,
-  annotation_col = sample_annotations,
-  main = "Heatmap of significant genes"
-)
-
-ggsave(filename = file.path(plots_dir, "SRP062829P_heatmop_top_expressed_genes.png"),
-       plot = heatmap_plot,)
-
-ggsave(filename = file.path(plots_dir, "SRP062829P_heatmop_top_50_expressed_genes.png"),
-       plot = heatmap_plot_top_50,)
+colnames(colData(ddset))
+vsd <- vst(ddset, blind = FALSE)
+plotPCA(vsd, intgroup = c("time_status", "refinebio_subject"))
