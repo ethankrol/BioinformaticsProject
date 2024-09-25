@@ -13,3 +13,5 @@ renv.lock
 .Rprofile
 .RData
 
+## vscode
+.vscode/
