@@ -17,16 +17,16 @@ sample_annotations <- data.frame(
 
 rownames(sample_annotations) <- colnames(scaled_expression_df)
 
-scaled_expression_df <- t(scale(t(top_fifty_expression_df)))
+scaled_expression_top_50_df <- t(scale(t(top_fifty_expression_df)))
 
 heatmap_plot <- pheatmap(
-  scaled_expression_df,
+  scaled_expression_top_50_df,
   cluster_rows = TRUE,
   cluster_cols = TRUE,
   show_rownames = TRUE,
   show_colnames = TRUE,
   annotation_col = sample_annotations,
-  main = "Heatmap of significant genes"
+  main = "Heatmap of top 50 significant genes"
 )
 
 ggsave(filename = file.path(plots_dir, "SRP062829P_heatmop_top_50_expressed_genes.png"),
@@ -54,16 +54,6 @@ sample_annotations <- data.frame(
 rownames(sample_annotations) <- colnames(scaled_expression_df)
 
 scaled_expression_df <- t(scale(t(top_expression_df)))
-
-heatmap_plot_top_50 <- pheatmap(
-  significant_expression_df,
-  cluster_rows = TRUE,
-  cluster_cols = TRUE,
-  show_rownames = TRUE,
-  show_colnames = TRUE,
-  annotation_col = sample_annotations,
-  main = "Heatmap of Top 50 Significant Genes"
-)
 
 heatmap_plot <- pheatmap(
   scaled_significant_expression_df,
