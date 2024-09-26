@@ -1,0 +1,11 @@
+GO.ID	Term	Annotated	Significant	Expected	classicFisher
+GO:0019209	kinase activator activity	141	91	68.96	0.00013
+GO:0060090	molecular adaptor activity	1109	602	542.43	0.00013
+GO:0005516	calmodulin binding	190	118	92.93	0.00016
+GO:0023026	MHC class II protein complex binding	12	12	5.87	0.00019
+GO:0044389	ubiquitin-like protein ligase binding	337	197	164.83	0.00025
+GO:0042288	MHC class I protein binding	34	27	16.63	0.00026
+GO:0019904	protein domain specific binding	822	451	402.05	0.00028
+GO:0002020	protease binding	163	102	79.73	0.00029
+GO:0043539	protein serine/threonine kinase activato...	67	47	32.77	0.00034
+GO:0005518	collagen binding	69	48	33.75	0.00040
