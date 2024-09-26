@@ -84,12 +84,12 @@ readr::write_tsv(
 # Extract the top 20 enriched terms by p-value for easier reporting
 top_enrichments <- gsea_df %>%
   dplyr::arrange(p_value) %>%
-  dplyr::slice(1:20)
+  dplyr::slice(1:10)
 
 # Save the top 20 enriched terms to a TSV file
 readr::write_tsv(
   top_enrichments,
-  file.path(results_dir, "gProfiler2_Gene_Ontology_top_20_gsea_go_enrichment_results.tsv")
+  file.path(results_dir, "gProfiler2_Gene_Ontology_top_10_gsea_go_enrichment_results.tsv")
 )
 
 # Summary: You now have full differential expression results and GSEA results.
