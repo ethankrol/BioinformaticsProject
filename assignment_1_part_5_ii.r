@@ -40,6 +40,13 @@ mm_hallmark_sets <- msigdbr(
   category = "H"
 )
 
+# GO:BP gene sets
+mm_go_bp_sets <- msigdbr(
+  species = "Mus musculus",
+  category = "C5",
+  subcategory = "BP"
+)
+
 # Let's create a named vector ranked based on the log2 fold change values
 lfc_vector <- dge_mapped_df$log2FoldChange
 names(lfc_vector) <- dge_mapped_df$Gene
@@ -75,7 +82,7 @@ readr::write_tsv(
 )
 
 gsea_top_ten <- gsea_result_df %>%
-  dplyr::slice_max(NES, n = 10)
+  dplyr::slice_min(p.adjust, n = 10)
 
 # Write the top 10 GSEA results to a TSV file
 readr::write_tsv(
