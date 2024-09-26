@@ -73,9 +73,9 @@ readr::write_tsv(
 
 top_enrichments <- gene_ontology_results_df %>%
   dplyr::arrange(pvalue) %>% 
-  dplyr::slice(1:20)
+  dplyr::slice(1:10)
 
 readr::write_tsv(
   top_enrichments,
-  file.path(results_dir, "wilcoxon_rank_sum_test_top_20_results.tsv")
+  file.path(results_dir, "wilcoxon_rank_sum_test_top_10_results.tsv")
 )
