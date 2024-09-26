@@ -35,3 +35,12 @@ write.table(allRes,
             sep = "\t", 
             row.names = FALSE, 
             quote = FALSE)
+
+top_enrichments <- allRes %>%
+  dplyr::arrange(desc(classicFisher)) %>% 
+  dplyr::slice(1:10)
+
+readr::write_tsv(
+  top_enrichments,
+  file.path(results_dir, "topGO_MF_top_10_results.tsv")
+)
