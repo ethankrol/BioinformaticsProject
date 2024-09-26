@@ -19,6 +19,7 @@ if (!dir.exists("data")) {
 
 # Define the file path to the plots directory
 plots_dir <- "plots"
+results_dir <- "results"
 
 # Create the plots folder if it doesn't exist
 if (!dir.exists(plots_dir)) {
