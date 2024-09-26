@@ -9,8 +9,20 @@ if (!file.exists(filtered_data_file)| !file.exists(filtered_metadata_file)) {
   source("generate_filtered_data.r")
 }
 
+if (!("Rtsne" %in% installed.packages())) {
+  # Install this package if it isn't installed yet
+  BiocManager::install("Rtsne", update = FALSE)
+}
+
+if (!("umap" %in% installed.packages())) {
+  # Install this package if it isn't installed yet
+  BiocManager::install("umap", update = FALSE)
+}
+
 ## load libraries
 library(ggplot2)
+library(dplyr)
+library(DESeq2)
 
 filtered_expression_df <- readr::read_tsv(filtered_data_file) %>%
   tibble::column_to_rownames("Symbol")
@@ -59,6 +71,7 @@ ggplot(tsne_df, aes(x = X, y = Y, color = time_status)) +
 # Save the plot
 ggsave(file.path(plots_dir, "tsne_plot.png"))
 
+library(umap)
 
 # Run UMAP on the transposed data (samples as rows)
 umap_out <- umap::umap(t(vsd_matrix))

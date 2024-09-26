@@ -11,6 +11,12 @@ BiocManager::install("topGO")
 library(topGO)
 library(org.Mm.eg.db)
 
+data_file <- file.path(results_dir, "SRP062829_diff_expr_results.tsv")
+if (!(file.exists(data_file))) {
+  source("assignment_1_part_3.r")
+}
+deseq_df <- readr::read_tsv(data_file)
+
 # Get all genes with name and padj
 allVec <- as.vector(deseq_df$padj)
 names(allVec) <- as.character(deseq_df$Gene)

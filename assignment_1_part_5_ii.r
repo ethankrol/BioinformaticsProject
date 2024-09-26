@@ -70,6 +70,18 @@ readr::write_tsv(
   gsea_result_df,
   file.path(
     results_dir,
-    "SRP062829_gsea_results.tsv"
+    "SRP062829_clusterProfiler_HallmarkONTO_gsea_results.tsv"
+  )
+)
+
+gsea_top_ten <- gsea_result_df %>%
+  dplyr::slice_max(NES, n = 10)
+
+# Write the top 10 GSEA results to a TSV file
+readr::write_tsv(
+  gsea_top_ten,
+  file.path(
+    results_dir,
+    "SRP062829_clusterProfiler_HallmarkONTO_top_10_gsea_results.tsv"
   )
 )

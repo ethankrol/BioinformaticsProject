@@ -1,5 +1,9 @@
 source("config.r")
 
+if(!("gprofiler2" %in% installed.packages())) {
+  BiocManager::install("gprofiler2", update = FALSE)
+}
+
 # Load required libraries
 library(DESeq2)
 library(dplyr)
