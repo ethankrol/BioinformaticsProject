@@ -1,5 +1,5 @@
-## tsv data
-*.tsv
+## data
+data/
 
 ## plots
 *.png
@@ -13,3 +13,5 @@ renv.lock
 .Rprofile
 .RData
 
+## vscode
+.vscode/

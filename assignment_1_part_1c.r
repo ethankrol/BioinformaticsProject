@@ -1,16 +1,24 @@
 source("config.r")
 
+if (!exists("filtered_data_file") | !exists("filtered_metadata_file")) {
+  source("generate_filtered_data.r")
+}
+
+if (!file.exists(filtered_data_file)| !file.exists(filtered_metadata_file)) {
+  source("generate_filtered_data.r")
+}
+
 library(readr)
 library(dplyr)
 library(ggplot2)
 
 # read in metadata
-metadata <- readr::read_tsv(metadata_file)
+metadata <- readr::read_tsv(filtered_metadata_file)
 
 # Read in data TSV file
-expression_df <- readr::read_tsv(data_file) %>%
+expression_df <- readr::read_tsv(filtered_data_file) %>%
   # Tuck away the Gene ID column as row names
-  tibble::column_to_rownames("Gene")
+  tibble::column_to_rownames("Symbol")
 
 # display dimensions
 dim(expression_df)
@@ -20,11 +28,11 @@ head(expression_df)
 
 # count the number of genes
 num_genes <- ncol(expression_df)
-cat("Number of genes:", num_genes, "\n")
+cat("Number of samples:", num_genes, "\n")
 
 # count the number of samples
 num_samples <- nrow(expression_df)
-cat("Number of samples:", num_samples, "\n")
+cat("Number of genes:", num_samples, "\n")
 
 # log-scale the data
 log_expression_df <- log2(expression_df + 1)

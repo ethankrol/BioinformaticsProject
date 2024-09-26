@@ -12,9 +12,18 @@ if (!file.exists(filtered_data_file)| !file.exists(filtered_metadata_file)) {
 if (!("EnhancedVolcano" %in% installed.packages())) {
   BiocManager::install("EnhancedVolcano", update = FALSE)
 }
+if (!("DESeq2" %in% installed.packages())) {
+  BiocManager::install("DESeq2", update = FALSE)
+}
+if (!("apeglm" %in% installed.packages())) {
+  # Install this package if it isn't installed yet
+  BiocManager::install("apeglm", update = FALSE)
+}
 
 ## load libraries
 library(ggplot2)
+library(dplyr)
+library(DESeq2)
 
 set.seed(123)
 
