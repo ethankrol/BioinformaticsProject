@@ -63,7 +63,7 @@ significant_genes <- deseq_df %>%
 # Run Gene Set Enrichment Analysis (GSEA) using gProfiler2 and Gene Ontology (GO)
 gsea_results <- gost(
   query = significant_genes,    # List of significant genes
-  organism = "hsapiens",         # Specify the organism (use "hsapiens" for human)
+  organism = "mmusculus",         # Specify the organism (use "hsapiens" for human)
   sources = "GO",                # Use "GO" for Gene Ontology (you can change this to other ontologies)
   user_threshold = 0.05          # Significance threshold for enrichment
 )
