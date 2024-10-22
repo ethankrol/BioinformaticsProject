@@ -15,3 +15,6 @@ renv.lock
 
 ## vscode
 .vscode/
+
+## venv
+venv/
