@@ -1,0 +1,21 @@
+library(dplyr)
+library(tidyverse)
+library(DESeq2)  
+library(edgeR)
+
+#Replaced this path to your filtered_data path from the last assignment
+filtered_data_path = "/Users/ethankrol/Downloads/MouseData/results/filtered_data.tsv" 
+
+#Import our filtered data from the last assignment
+
+filtered_expression_df <- readr::read_tsv(filtered_data_path) %>%
+  tibble::column_to_rownames("Symbol")
+
+#Use statistical variance to find variance across each row of genes
+gene_variances <- apply(filtered_expression_df, 1, var)
+
+#Order the top 5000 genes by variance
+top_5000_genes <- order(gene_variances, decreasing = TRUE)[1:5000]
+
+# Subset the original dataframe with the top 5000 genes
+top_5000_gene_data <- filtered_expression_df[top_5000_genes, ]
