@@ -84,6 +84,8 @@ chi_sq_results_df <- data.frame(
   P_value = unlist(chi_sq_results)
 )
 
+write.csv(chi_sq_results_df, "chi_squared_results_original_clusters.csv", row.names = FALSE)
+
 chi_sq_results_df$Adjusted_P_value <- p.adjust(chi_sq_results_df$P_value)
 
 #Transform the data sets so that each variable is a column. We need each column
@@ -101,6 +103,27 @@ clusters_df <- data.frame(
   Clusters_10000_Genes = as.factor(clusters_10000)
 )
 
+metadata_10_genes <- filtered_metadata
+metadata_10_genes$cluster <- clusters_10
+
+metadata_100_genes <- filtered_metadata
+metadata_100_genes$cluster <- clusters_100
+
+metadata_1000_genes <- filtered_metadata
+metadata_1000_genes$cluster <- clusters_1000
+
+metadata_5000_genes <- filtered_metadata
+metadata_5000_genes$cluster <- clusters_5000
+
+metadata_10000_genes <- filtered_metadata
+metadata_10000_genes$cluster <- clusters_10000
+
+write.csv(metadata_10_genes, "GMM_10_genes.csv")
+write.csv(metadata_100_genes, "GMM_100_genes.csv")
+write.csv(metadata_1000_genes, "GMM_1000_genes.csv")
+write.csv(metadata_5000_genes, "GMM_5000_genes.csv")
+write.csv(metadata_10000_genes, "GMM_10000_genes.csv")
+
 ggplot(clusters_df,
        aes(y = 1, axis1 = Clusters_10_Genes, axis2 = Clusters_100_Genes, axis3 = Clusters_1000_Genes, axis4 = Clusters_5000_Genes, axis5 = Clusters_10000_Genes)) +
   geom_alluvium(aes(fill = Sample)) +
@@ -111,3 +134,5 @@ ggplot(clusters_df,
   labs(title = "Sankey Plot of Clusters Differing Across Numbers of Genes",
        x = "Number of Genes", y = "Samples") +
   theme_minimal()
+
+
