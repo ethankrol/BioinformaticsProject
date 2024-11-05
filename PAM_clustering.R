@@ -3,6 +3,8 @@ library(cluster)
 library(dplyr)
 library(ggplot2)
 library(readr)
+library(networkD3)
+
 
 results_dir <- "results_assignment3"
 num_clusters <- 5
@@ -81,3 +83,90 @@ for (num_genes in num_genes_list) {
   write_tsv(metadata_with_clusters, file.path(results_dir, paste0(num_clusters, "_pam_clusters_from_", num_genes, "_genes.tsv")))
 }
 
+# Initialize vectors to store chi-squared test results
+p_values <- c()
+adjusted_p_values <- c()
+test_names <- c()
+
+# Loop through each pair of gene sets
+for (i in 1:(length(num_genes_list) - 1)) {
+  for (j in (i + 1):length(num_genes_list)) {
+    
+    num_genes1 <- num_genes_list[i]
+    num_genes2 <- num_genes_list[j]
+    
+    # Read the clustering results for the two gene sets
+    df1 <- read_tsv(paste0("results_assignment3/K_means/K_means_6_clusters_from_", num_genes1, "_genes.tsv"))
+    df2 <- read_tsv(paste0("results_assignment3/K_means/K_means_6_clusters_from_", num_genes2, "_genes.tsv"))
+    
+    # Create a contingency table comparing the cluster assignments for the two sets
+    contingency_table <- table(df1$Cluster, df2$Cluster)
+    
+    # Perform chi-squared test
+    chi_test <- chisq.test(contingency_table)
+    
+    # Store p-value and test name
+    p_values <- c(p_values, chi_test$p.value)
+    test_names <- c(test_names, paste0(num_genes1, " genes vs ", num_genes2, " genes"))
+  }
+}
+
+# Adjust p-values for multiple hypothesis testing using the Benjamini-Hochberg method
+adjusted_p_values <- p.adjust(p_values, method = "BH")
+
+# Combine results into a data frame
+chi_squared_results <- data.frame(
+  Test = test_names,
+  Original_p_value = p_values,
+  Adjusted_p_value = adjusted_p_values
+)
+
+# Print the chi-squared test results
+print(chi_squared_results)
+
+# Optionally, write the results to a file
+write_tsv(chi_squared_results, "results_assignment3/chi_squared_results.tsv")
+
+source <- c()
+target <- c()
+value <- c()
+
+# Loop through each pair of gene sets
+for (i in 1:(length(num_genes_list) - 1)) {
+  num_genes1 <- num_genes_list[i]
+  num_genes2 <- num_genes_list[i + 1]
+  
+  # Read the data for the two gene sets
+  df1 <- read_tsv(paste0("results_assignment3/5_PAM_clusters_from_", num_genes1, "_genes.tsv"))
+  df2 <- read_tsv(paste0("results_assignment3/5_PAM_clusters_from_", num_genes2, "_genes.tsv"))
+  
+  # Create a contingency table (cross-tabulation) between clusters from two different gene sets
+  contingency_table <- table(df1$Cluster, df2$Cluster)
+  
+  # Extract the number of connections between clusters
+  for (j in 1:nrow(contingency_table)) {
+    for (k in 1:ncol(contingency_table)) {
+      # Source cluster (in the first gene set) is row index j
+      # Target cluster (in the second gene set) is column index k
+      source <- c(source, 2 * (i - 1) + (j - 1))
+      target <- c(target, 2 * (i - 1) + 2 + (k - 1))
+      value <- c(value, as.integer(contingency_table[j, k]))
+    }
+  }
+}
+
+# Define node labels
+node_labels <- unlist(lapply(num_genes_list, function(num_genes) {
+  paste0(num_genes, " genes<br>Cluster ", 1:6)
+}))
+
+# Create Sankey diagram data
+sankey_data <- list(
+  nodes = data.frame(name = node_labels),
+  links = data.frame(source = source, target = target, value = value)
+)
+
+# Create the Sankey diagram using networkD3
+sankeyNetwork(Links = sankey_data$links, Nodes = sankey_data$nodes,
+              Source = "source", Target = "target", Value = "value", NodeID = "name",
+              fontSize = 12, nodeWidth = 30)
