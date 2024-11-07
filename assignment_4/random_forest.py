@@ -5,36 +5,59 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 
-data = pd.read_csv('results_assignment3/top_5000_variable_genes.tsv', sep = '\t')  
+num_genes_list = [10, 100, 1000, 5000, 10000]
 
-data = data.transpose()
+all_results = []
 
-label_data = pd.read_csv("results_assignment3/GMM/GMM_5000_genes.csv")[["refinebio_accession_code", "time_status", "cluster"]]
+for num_genes in num_genes_list:
+    data = pd.read_csv(f'results_assignment3/top_{num_genes}_variable_genes.tsv', sep = '\t')  
 
-data = pd.merge(data, label_data, left_index=True, right_on='refinebio_accession_code')
+    data = data.transpose()
 
-X = data.iloc[:, 1:-3]
-scaler = StandardScaler()
-X = scaler.fit_transform(X)
+    label_data = pd.read_csv(f"results_assignment3/GMM/GMM_{num_genes}_genes.csv")[["refinebio_accession_code", "time_status", "cluster"]]
 
-num_genes = 5000
+    data = pd.merge(data, label_data, left_index=True, right_on='refinebio_accession_code')
 
-for group in ["time_status"]:
+    X = data.iloc[:, 1:-3]
 
+    group = "time_status"
     y = data[group]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=3)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
 
-    rfc = RandomForestClassifier()
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    rfc = RandomForestClassifier(random_state = 1)
     rfc.fit(X_train, y_train)
 
     y_pred = rfc.predict(X_test)
-    print(f"Group: {group}")
-    print(classification_report(y_test, y_pred))   
+    y_prob = rfc.predict_proba(X_test)[:, 1]
+    print(f"Group: {num_genes}")
+    report = classification_report(y_test, y_pred, output_dict=True)
+    print(report)  
 
+    auc_score = roc_auc_score(y_test, y_prob) 
 
-model_labels = rfc.predict(X)
-print(model_labels)
-model_output = pd.read_csv("assignment_4/predictive_model_labels_5000_genes.tsv", sep = '\t')
-model_output["RFC_label"] = model_labels
-model_output.to_csv(f"assignment_4/predictive_model_labels_{num_genes}_genes.tsv", sep="\t", index=False)
+    metrics = {
+        'num_genes': num_genes,
+        'AUC': auc_score,
+        'precision': report['weighted avg']['precision'],
+        'recall': report['weighted avg']['recall'],
+        'f1-score': report['weighted avg']['f1-score'],
+        'support': report['weighted avg']['support'],
+    }
+
+    all_results.append(metrics)
+
+    model_labels = rfc.predict(X)
+
+    data[f'RFC_label_{num_genes}_genes'] = model_labels
+    data[['refinebio_accession_code', f'RFC_label_{num_genes}_genes']].to_csv(
+        f"assignment_4/predictive_model_labels_{num_genes}_genes.tsv", sep='\t', index=False
+    )
+
+results_df = pd.DataFrame(all_results)
+
+results_df.to_csv('assignment_4/random_forest_results_all_groups.tsv', sep='\t', index=False)
