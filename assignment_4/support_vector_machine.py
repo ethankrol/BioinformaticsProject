@@ -4,7 +4,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.preprocessing import StandardScaler
 
-num_genes_list = [10, 100, 1000, 10000]
+num_genes_list = [5000]
+
+print("Number of genes & Accuracy \\\\")
 
 for num_genes in num_genes_list:
     # Load the data
@@ -37,7 +39,7 @@ for num_genes in num_genes_list:
 
         # predict/evaluate
         y_pred = svm.predict(X_test)
-        print(classification_report(y_test, y_pred))
+        print(f"{num_genes} genes & {accuracy_score(y_test, y_pred)} \\\\")
 
 # write out model labels for each sample
 model_labels = svm.predict(X)
